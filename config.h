@@ -1,16 +1,17 @@
 #ifndef CONFIG_H_INCLUDED
 #define CONFIG_H_INCLUDED
         /*path to the input event, need to be part of input group in order to read*/
-        char devname[] = "/dev/input/by-id/usb-Wacom_Co._Ltd._Pen_and_multitouch_sensor-event-if00";
+        char devname[] = "/dev/input/by-id/usb-Melfas_LGDisplay_Incell_Touch-event-if00";
         /*path to accelerometer data*/
         std::string accelpath = "/sys/bus/iio/devices/"; //in there the program looks for a folder named iio:device0 or 1
         std::string xrawdata = "in_accel_x_raw"; // in iio:device* there should be these files with the respective data
         std::string yrawdata = "in_accel_y_raw";
         /*maximum values x and y coordinate can have, usually bottom right of screen and can be found using evtest on the input device*/
-        int xmax = 11747;
-        int ymax = 6607;
+        int xmax = 4095; //11747;
+        int ymax = 4095; //6607;
         /*minimum length required for something to be a swipe*/
-        double swipetolerance = 0.15;
+        double swipetolerance = 0.05; //0.15;
+        double pinchtolerance = 0.001;
         /*value to scale the angle in degrees for e.g. changing volume*/
         int anglescaling = 2;
         /*another value to set the stepsize for rotations*/
@@ -23,7 +24,7 @@
         int offsetleft = 10;
         int offsetright = 10;
         /*an array of commands to use within the program*/
-        char* commands[] = {
+        char commands[][128] = {
             "onboard &", /*1 finger from bottom*/
             "dmenu_run &", /*1 finger from top*/
             "", /*1 finger from right*/
