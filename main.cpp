@@ -93,21 +93,22 @@ main ()
     //printf("type: %d\t code(Key): %d\t value(State): %d\n", ev.type, ev.code, ev.value);
 
     /*count the number of fingers*/
-    //ABS_MT_TOOL_TYPE	0x37 -> 57 - Type of touching device
-    if (ev.code == 57 && ev.value > 0)
+    //ABS_MT_TRACKING_ID	0x37 -> 57 - Type of touching device
+    //printf("ABS_MT_TRACKING_ID: %d\n", ABS_MT_TRACKING_ID);
+    if (ev.code == ABS_MT_TRACKING_ID && ev.value > 0)
     {
       nfingers += 1;
       printf ("Fingers detected: %d\n", nfingers);
     }
 
     //ABS_MT_POSITION_X: 53 , ABS_MT_POSITION_Y: 54
-    if ((ev.code == 53 || ev.code == 54) && ev.value > 0)
+    if ((ev.code == ABS_MT_POSITION_X || ev.code == ABS_MT_POSITION_Y) && ev.value > 0)
     {
       static int xval;
       static int yval;
-      if (ev.code == 53)
+      if (ev.code == ABS_MT_POSITION_X)
 	xval = ev.value;
-      if (ev.code == 54)
+      if (ev.code == ABS_MT_POSITION_Y)
 	yval = ev.value;
       printf ("(%d, %d)\n", xval, yval);
     }
@@ -161,55 +162,55 @@ main ()
       //printf("normal orientation\n");
       if (finger == 0)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger0x.push_back (ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger0y.push_back (ev.value);
 	}
       }
       else if (finger == 1)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger1x.push_back (ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger1y.push_back (ev.value);
 	}
       }
       else if (finger == 2)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger2x.push_back (ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger2y.push_back (ev.value);
 	}
       }
       else if (finger == 3)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger3x.push_back (ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger3y.push_back (ev.value);
 	}
       }
       else if (finger == 4)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger4x.push_back (ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger4y.push_back (ev.value);
 	}
@@ -226,55 +227,55 @@ main ()
       ymax = yrotmax;
       if (finger == 0)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger0x.push_back (xmax - ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger0y.push_back (ev.value);
 	}
       }
       else if (finger == 1)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger1x.push_back (ymax - ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger1y.push_back (ev.value);
 	}
       }
       else if (finger == 2)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger2x.push_back (ymax - ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger2y.push_back (ev.value);
 	}
       }
       else if (finger == 3)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger3x.push_back (ymax - ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger3y.push_back (ev.value);
 	}
       }
       else if (finger == 4)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger4x.push_back (ymax - ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger4y.push_back (ev.value);
 	}
@@ -289,55 +290,55 @@ main ()
       //printf("upside down\n");
       if (finger == 0)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger0x.push_back (xmax - ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger0y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 1)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger1x.push_back (xmax - ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger1y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 2)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger2x.push_back (xmax - ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger2y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 3)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger3x.push_back (xmax - ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger3y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 4)
       {
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger4x.push_back (xmax - ev.value);
 	}
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger4y.push_back (ymax - ev.value);
 	}
@@ -354,55 +355,55 @@ main ()
       ymax = yrotmax;
       if (finger == 0)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger0x.push_back (ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger0y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 1)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger1x.push_back (ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger1y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 2)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger2x.push_back (ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger2y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 3)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger3x.push_back (ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger3y.push_back (ymax - ev.value);
 	}
       }
       else if (finger == 4)
       {
-	if (ev.code == 54)
+	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger4x.push_back (ev.value);
 	}
-	if (ev.code == 53)
+	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger4y.push_back (ymax - ev.value);
 	}
@@ -414,7 +415,7 @@ main ()
     }
     //printf("array sizes %i,%i,%i,%i,%i\n",finger0x.size(),finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size());
 
-    if (ev.code == 57 && ev.value == -1) /* this code+value means that a finger left the screen and I think that is when the gesture should end, not at the last finger.*/
+    if (ev.code == ABS_MT_TRACKING_ID && ev.value == -1) /* this code+value means that a finger left the screen and I think that is when the gesture should end, not at the last finger.*/
     {
       /*stuff to calculate per finger*/
       double x0first = finger0x[0];
