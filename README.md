@@ -1,6 +1,6 @@
 # gester
-Gester is a gesture interpreting program for  touchscreens that works directly on Linux input. Refer to https://www.kernel.org/doc/Documentation/input/input.txt
-It has however been shown that this can run on touchscreens, touchpads and even a Nintendo Switch!
+Gester is a gesture interpreting program for  touchscreens that works directly on Linux input. Refer to https://www.kernel.org/doc/Documentation/input/input.txt . 
+It has been shown that this can run on touchscreens, touchpads and even a Nintendo Switch!
 The gesture interpretation is being done directly in the program, not relying on other programs, which does allow for easy addition of gestures.
 
 # configuration and installation
@@ -13,6 +13,7 @@ When everything is configured correctly one can just run the commands ```make```
 - `cd build`
 - `cmake ..` 
 - `make`
+- and `sudo make install`
 
 # supported gestures
 Currently the following gestures have been implemented:
