@@ -29,8 +29,8 @@ sig_atomic_t sigusrsig = 0;
 int main(int argc, char **argv)
 {
   printf ("Zonare Gestures :\n");
-  int device = open (devname, O_RDONLY);
 
+  int device = open (devname, O_RDONLY);
   if(device == -1)
   {
     printf("Error: Could not open input device : %s\n", devname);
@@ -56,6 +56,7 @@ int main(int argc, char **argv)
   std::ifstream yacceldata;
   xacceldata.open (xaccelpathfull);
   yacceldata.open (yaccelpathfull);
+
   if (xacceldata.good () != true)
   {
     xaccelpathfull = accelpath + "iio:device1/" + xrawdata;
@@ -63,6 +64,7 @@ int main(int argc, char **argv)
     xacceldata.open (xaccelpathfull);
     yacceldata.open (yaccelpathfull);
   }
+
   int accelxraw = 0;
   int accelyraw = 0;
   double accelx = 0;
@@ -71,9 +73,8 @@ int main(int argc, char **argv)
   int orientation = 0;
   /*conversion of the angles from radians to degree*/
   double radtoang = 360 / 6.28318531;
+
   /*two arrays per finger to track*/
-  std::vector<int> finger0x;
-  std::vector<int> finger0y;
   std::vector<int> finger1x;
   std::vector<int> finger1y;
   std::vector<int> finger2x;
@@ -82,6 +83,8 @@ int main(int argc, char **argv)
   std::vector<int> finger3y;
   std::vector<int> finger4x;
   std::vector<int> finger4y;
+  std::vector<int> finger5x;
+  std::vector<int> finger5y;
 
   while (1)
   {
@@ -111,7 +114,7 @@ int main(int argc, char **argv)
     //printf("type: %d\t code(Key): %d\t value(State): %d\n", ev.type, ev.code, ev.value);
 
     /*count the number of fingers*/
-    //ABS_MT_TRACKING_ID	0x37 -> 57 - Type of touching device
+    //ABS_MT_TRACKING_ID	0x39 (57) - Unique ID of initiated contact
     //printf("ABS_MT_TRACKING_ID: %d\n", ABS_MT_TRACKING_ID);
     if (ev.code == ABS_MT_TRACKING_ID && ev.value > 0)
     {
@@ -132,8 +135,8 @@ int main(int argc, char **argv)
     }
 
     /*determine which finger's coordinates will be incoming*/
-    //ABS_MT_SLOT	0x2f -> 0x2f - MT slot being modified
-    if (ev.code == 47)
+    //ABS_MT_SLOT	0x2f (47)  - Multi Touch slot being modified
+    if (ev.code == ABS_MT_SLOT)
     {
       finger = ev.value;
     }
@@ -182,17 +185,6 @@ int main(int argc, char **argv)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
-	  finger0x.push_back (ev.value);
-	}
-	if (ev.code == ABS_MT_POSITION_Y)
-	{
-	  finger0y.push_back (ev.value);
-	}
-      }
-      else if (finger == 1)
-      {
-	if (ev.code == ABS_MT_POSITION_X)
-	{
 	  finger1x.push_back (ev.value);
 	}
 	if (ev.code == ABS_MT_POSITION_Y)
@@ -200,7 +192,7 @@ int main(int argc, char **argv)
 	  finger1y.push_back (ev.value);
 	}
       }
-      else if (finger == 2)
+      else if (finger == 1)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
@@ -211,7 +203,7 @@ int main(int argc, char **argv)
 	  finger2y.push_back (ev.value);
 	}
       }
-      else if (finger == 3)
+      else if (finger == 2)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
@@ -222,7 +214,7 @@ int main(int argc, char **argv)
 	  finger3y.push_back (ev.value);
 	}
       }
-      else if (finger == 4)
+      else if (finger == 3)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
@@ -231,6 +223,17 @@ int main(int argc, char **argv)
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger4y.push_back (ev.value);
+	}
+      }
+      else if (finger == 4)
+      {
+	if (ev.code == ABS_MT_POSITION_X)
+	{
+	  finger5x.push_back (ev.value);
+	}
+	if (ev.code == ABS_MT_POSITION_Y)
+	{
+	  finger5y.push_back (ev.value);
 	}
       }
       else
@@ -247,25 +250,14 @@ int main(int argc, char **argv)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
-	  finger0x.push_back (xmax - ev.value);
-	}
-	if (ev.code == ABS_MT_POSITION_X)
-	{
-	  finger0y.push_back (ev.value);
-	}
-      }
-      else if (finger == 1)
-      {
-	if (ev.code == ABS_MT_POSITION_Y)
-	{
-	  finger1x.push_back (ymax - ev.value);
+	  finger1x.push_back (xmax - ev.value);
 	}
 	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger1y.push_back (ev.value);
 	}
       }
-      else if (finger == 2)
+      else if (finger == 1)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
@@ -276,7 +268,7 @@ int main(int argc, char **argv)
 	  finger2y.push_back (ev.value);
 	}
       }
-      else if (finger == 3)
+      else if (finger == 2)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
@@ -287,7 +279,7 @@ int main(int argc, char **argv)
 	  finger3y.push_back (ev.value);
 	}
       }
-      else if (finger == 4)
+      else if (finger == 3)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
@@ -296,6 +288,17 @@ int main(int argc, char **argv)
 	if (ev.code == ABS_MT_POSITION_X)
 	{
 	  finger4y.push_back (ev.value);
+	}
+      }
+      else if (finger == 4)
+      {
+	if (ev.code == ABS_MT_POSITION_Y)
+	{
+	  finger5x.push_back (ymax - ev.value);
+	}
+	if (ev.code == ABS_MT_POSITION_X)
+	{
+	  finger5y.push_back (ev.value);
 	}
       }
       else
@@ -310,17 +313,6 @@ int main(int argc, char **argv)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
-	  finger0x.push_back (xmax - ev.value);
-	}
-	if (ev.code == ABS_MT_POSITION_Y)
-	{
-	  finger0y.push_back (ymax - ev.value);
-	}
-      }
-      else if (finger == 1)
-      {
-	if (ev.code == ABS_MT_POSITION_X)
-	{
 	  finger1x.push_back (xmax - ev.value);
 	}
 	if (ev.code == ABS_MT_POSITION_Y)
@@ -328,7 +320,7 @@ int main(int argc, char **argv)
 	  finger1y.push_back (ymax - ev.value);
 	}
       }
-      else if (finger == 2)
+      else if (finger == 1)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
@@ -339,7 +331,7 @@ int main(int argc, char **argv)
 	  finger2y.push_back (ymax - ev.value);
 	}
       }
-      else if (finger == 3)
+      else if (finger == 2)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
@@ -350,7 +342,7 @@ int main(int argc, char **argv)
 	  finger3y.push_back (ymax - ev.value);
 	}
       }
-      else if (finger == 4)
+      else if (finger == 3)
       {
 	if (ev.code == ABS_MT_POSITION_X)
 	{
@@ -359,6 +351,17 @@ int main(int argc, char **argv)
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
 	  finger4y.push_back (ymax - ev.value);
+	}
+      }
+      else if (finger == 4)
+      {
+	if (ev.code == ABS_MT_POSITION_X)
+	{
+	  finger5x.push_back (xmax - ev.value);
+	}
+	if (ev.code == ABS_MT_POSITION_Y)
+	{
+	  finger5y.push_back (ymax - ev.value);
 	}
       }
       else
@@ -375,17 +378,6 @@ int main(int argc, char **argv)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
-	  finger0x.push_back (ev.value);
-	}
-	if (ev.code == ABS_MT_POSITION_X)
-	{
-	  finger0y.push_back (ymax - ev.value);
-	}
-      }
-      else if (finger == 1)
-      {
-	if (ev.code == ABS_MT_POSITION_Y)
-	{
 	  finger1x.push_back (ev.value);
 	}
 	if (ev.code == ABS_MT_POSITION_X)
@@ -393,7 +385,7 @@ int main(int argc, char **argv)
 	  finger1y.push_back (ymax - ev.value);
 	}
       }
-      else if (finger == 2)
+      else if (finger == 1)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
@@ -404,7 +396,7 @@ int main(int argc, char **argv)
 	  finger2y.push_back (ymax - ev.value);
 	}
       }
-      else if (finger == 3)
+      else if (finger == 2)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
@@ -415,7 +407,7 @@ int main(int argc, char **argv)
 	  finger3y.push_back (ymax - ev.value);
 	}
       }
-      else if (finger == 4)
+      else if (finger == 3)
       {
 	if (ev.code == ABS_MT_POSITION_Y)
 	{
@@ -426,95 +418,106 @@ int main(int argc, char **argv)
 	  finger4y.push_back (ymax - ev.value);
 	}
       }
+      else if (finger == 4)
+      {
+	if (ev.code == ABS_MT_POSITION_Y)
+	{
+	  finger5x.push_back (ev.value);
+	}
+	if (ev.code == ABS_MT_POSITION_X)
+	{
+	  finger5y.push_back (ymax - ev.value);
+	}
+      }
       else
       {
 	printf ("There was no array planned for more than 5 fingers.\n");
       }
     }
-    //printf("array sizes %i,%i,%i,%i,%i\n",finger0x.size(),finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size());
+    //printf("array sizes %i,%i,%i,%i,%i\n",finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size(),finger5x.size());
 
     if (ev.code == ABS_MT_TRACKING_ID && ev.value == -1) /* this code+value means that a finger left the screen and I think that is when the gesture should end, not at the last finger.*/
     {
       /*stuff to calculate per finger*/
-      double x0first = finger0x[0];
-      double x0last = finger0x[finger0x.size () - 1];
+      double x0first = finger1x[0];
+      double x0last = finger1x[finger1x.size () - 1];
       double x0len = ((x0last - x0first) / xmax);
-      double y0first = finger0y[0];
-      double y0last = finger0y[finger0y.size () - 1];
+      double y0first = finger1y[0];
+      double y0last = finger1y[finger1y.size () - 1];
       double y0len = ((y0last - y0first) / ymax);
-      double finger0directionality = abs (x0len / y0len);
-      //printf("directionality: %f\n",finger0directionality);
+      double finger1directionality = abs (x0len / y0len);
+      //printf("directionality: %f\n",finger1directionality);
       double x1first, x1last, x1len, y1first, y1last, y1len,
-	  finger1directionality;
-      double x2first, x2last, x2len, y2first, y2last, y2len,
 	  finger2directionality;
-      double x3first, x3last, x3len, y3first, y3last, y3len,
+      double x2first, x2last, x2len, y2first, y2last, y2len,
 	  finger3directionality;
-      double x4first, x4last, x4len, y4first, y4last, y4len,
+      double x3first, x3last, x3len, y3first, y3last, y3len,
 	  finger4directionality;
+      double x4first, x4last, x4len, y4first, y4last, y4len,
+	  finger5directionality;
 
       /*only try reading from vectors that are not empty*/
-      if (finger1x.size () != 0)
-      {
-	x1first = finger1x[0];
-	x1last = finger1x[finger1x.size () - 1];
-	x1len = ((x1last - x1first) / xmax);
-	y1first = finger1y[0];
-	y1last = finger1y[finger1y.size () - 1];
-	y1len = ((y1last - y1first) / ymax);
-	finger1directionality = abs (x1len / y1len);
-      }
       if (finger2x.size () != 0)
       {
-	x2first = finger2x[0];
-	x2last = finger2x[finger2x.size () - 1];
-	x2len = ((x2last - x2first) / xmax);
-	y2first = finger2y[0];
-	y2last = finger2y[finger2y.size () - 1];
-	y2len = ((y2last - y2first) / ymax);
-	finger2directionality = abs (x2len / y2len);
+	x1first = finger2x[0];
+	x1last = finger2x[finger2x.size () - 1];
+	x1len = ((x1last - x1first) / xmax);
+	y1first = finger2y[0];
+	y1last = finger2y[finger2y.size () - 1];
+	y1len = ((y1last - y1first) / ymax);
+	finger2directionality = abs (x1len / y1len);
       }
       if (finger3x.size () != 0)
       {
-	x3first = finger3x[0];
-	x3last = finger3x[finger3x.size () - 1];
-	x3len = ((x3last - x3first) / xmax);
-	y3first = finger3y[0];
-	y3last = finger3y[finger3y.size () - 1];
-	y3len = ((y3last - y3first) / ymax);
-	finger3directionality = abs (x3len / y3len);
+	x2first = finger3x[0];
+	x2last = finger3x[finger3x.size () - 1];
+	x2len = ((x2last - x2first) / xmax);
+	y2first = finger3y[0];
+	y2last = finger3y[finger3y.size () - 1];
+	y2len = ((y2last - y2first) / ymax);
+	finger3directionality = abs (x2len / y2len);
       }
       if (finger4x.size () != 0)
       {
-	x4first = finger4x[0];
-	x4last = finger4x[finger4x.size () - 1];
+	x3first = finger4x[0];
+	x3last = finger4x[finger4x.size () - 1];
+	x3len = ((x3last - x3first) / xmax);
+	y3first = finger4y[0];
+	y3last = finger4y[finger4y.size () - 1];
+	y3len = ((y3last - y3first) / ymax);
+	finger4directionality = abs (x3len / y3len);
+      }
+      if (finger5x.size () != 0)
+      {
+	x4first = finger5x[0];
+	x4last = finger5x[finger5x.size () - 1];
 	x4len = ((x4last - x4first) / xmax);
-	y4first = finger4y[0];
-	y4last = finger4y[finger4y.size () - 1];
+	y4first = finger5y[0];
+	y4last = finger5y[finger5y.size () - 1];
 	y4len = ((y4last - y4first) / ymax);
-	finger4directionality = abs (x4len / y4len);
+	finger5directionality = abs (x4len / y4len);
       }
       //printf("nfingers: %i\n",nfingers);
 
       if (nfingers == 1)
       {
 	/*one finger screen edge gestures*/
-	if (y0first >= (ymax - offsetbottom) && finger0directionality < 1)
+	if (y0first >= (ymax - offsetbottom) && finger1directionality < 1)
 	{
 	  printf ("1 finger swipe from bottom edge!\n");
 	  //system(commands[0]);
 	}
-	if (y0first <= offsettop && finger0directionality < 1)
+	if (y0first <= offsettop && finger1directionality < 1)
 	{
 	  printf ("1 finger swipe from top edge!\n");
 	  //system(commands[1]);
 	}
-	if (x0first >= (xmax - offsetright) && finger0directionality > 1)
+	if (x0first >= (xmax - offsetright) && finger1directionality > 1)
 	{
 	  printf ("1 finger swipe from right edge!\n");
 	  //system(commands[2]);
 	}
-	if (x0first <= offsetleft && finger0directionality > 1)
+	if (x0first <= offsetleft && finger1directionality > 1)
 	{
 	  printf ("1 finger swipe from left edge!\n");
 	  //system(commands[3]);
@@ -562,57 +565,57 @@ int main(int argc, char **argv)
 	  //printf("conditions for 2 finger gestures met\n");
 	  /*2 finger edge swipes*/
 	  if (y0first >= (ymax - offsetbottom)
-	      && y1first >= (ymax - offsetbottom) && finger0directionality < 1
-	      && finger1directionality < 1)
+	      && y1first >= (ymax - offsetbottom) && finger1directionality < 1
+	      && finger2directionality < 1)
 	  {
 	    printf ("2 finger swipe from bottom edge!\n");
 	    //system(commands[4]);
 	    swipesuccess = 1;
 	  }
 	  else if (y0first <= offsettop && y1first <= offsettop
-	      && finger0directionality < 1 && finger1directionality < 1)
+	      && finger1directionality < 1 && finger2directionality < 1)
 	  {
 	    printf ("2 finger swipe from top edge!\n");
 	    //system(commands[5]);
 	    swipesuccess = 1;
 	  }
 	  else if (x0first >= (xmax - offsetright)
-	      && x1first >= (xmax - offsetright) && finger0directionality > 1
-	      && finger1directionality > 1)
+	      && x1first >= (xmax - offsetright) && finger1directionality > 1
+	      && finger2directionality > 1)
 	  {
 	    printf ("2 finger swipe from right edge!\n");
 	    //system(commands[6]);
 	    swipesuccess = 1;
 	  }
 	  else if (x0first <= offsetleft && x1first <= offsetleft
-	      && finger0directionality > 1 && finger1directionality > 1)
+	      && finger1directionality > 1 && finger2directionality > 1)
 	  {
 	    printf ("2 finger swipe from left edge!\n");
 	    //system(commands[7]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
+	  else if (finger1directionality < 1 && finger2directionality < 1
 	      && y0last > y0first && y1last > y1first)
 	  {
 	    printf ("2 finger swipe down!\n");
 	    //system(commands[8]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
+	  else if (finger1directionality < 1 && finger2directionality < 1
 	      && y0last < y0first && y1last < y1first)
 	  {
 	    printf ("2 finger swipe up!\n");
 	    //system(commands[9]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
+	  else if (finger1directionality > 1 && finger2directionality > 1
 	      && x0last > x0first && x1last > x1first)
 	  {
 	    printf ("2 finger swipe right!\n");
 	    //system(commands[10]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
+	  else if (finger1directionality > 1 && finger2directionality > 1
 	      && x0last < x0first && x1last < x1first)
 	  {
 	    printf ("2 finger swipe left!\n");
@@ -709,16 +712,16 @@ int main(int argc, char **argv)
 	{
 	  if (y0first >= (ymax - offsetbottom)
 	      && y1first >= (ymax - offsetbottom)
-	      && y2first >= (ymax - offsetbottom) && finger0directionality < 1
-	      && finger1directionality < 1 && finger2directionality < 1)
+	      && y2first >= (ymax - offsetbottom) && finger1directionality < 1
+	      && finger2directionality < 1 && finger3directionality < 1)
 	  {
 	    printf ("3 finger swipe from bottom edge!\n");
 	    //system(commands[14]);
 	    swipesuccess = 1;
 	  }
 	  else if (y0first <= offsettop && y1first <= offsettop
-	      && y2first <= offsettop && finger0directionality < 1
-	      && finger1directionality < 1 && finger2directionality < 1)
+	      && y2first <= offsettop && finger1directionality < 1
+	      && finger2directionality < 1 && finger3directionality < 1)
 	  {
 	    printf ("3 finger swipe from top edge!\n");
 	    //system(commands[15]);
@@ -726,47 +729,47 @@ int main(int argc, char **argv)
 	  }
 	  else if (x0first >= (xmax - offsetright)
 	      && x1first >= (xmax - offsetright)
-	      && x2first >= (xmax - offsetright) && finger0directionality > 1
-	      && finger1directionality > 1 && finger2directionality > 1)
+	      && x2first >= (xmax - offsetright) && finger1directionality > 1
+	      && finger2directionality > 1 && finger3directionality > 1)
 	  {
 	    printf ("3 finger swipe from right edge!\n");
 	    //system(commands[16]);
 	    swipesuccess = 1;
 	  }
 	  else if (x0first <= offsetleft && x1first <= offsetleft
-	      && x2first <= offsetleft && finger0directionality > 1
-	      && finger1directionality > 1 && finger2directionality > 1)
+	      && x2first <= offsetleft && finger1directionality > 1
+	      && finger2directionality > 1 && finger3directionality > 1)
 	  {
 	    printf ("3 finger swipe from left edge!\n");
 	    //system(commands[17]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && y0last > y0first
+	  else if (finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && y0last > y0first
 	      && y1last > y1first && y2last > y2first)
 	  {
 	    printf ("3 finger swipe down!\n");
 	    //system(commands[18]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && y0last < y0first
+	  else if (finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && y0last < y0first
 	      && y1last < y1first && y2last < y2first)
 	  {
 	    printf ("3 finger swipe up!\n");
 	    //system(commands[19]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && x0last > x0first
+	  else if (finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && x0last > x0first
 	      && x1last > x1first && x2last > x2first)
 	  {
 	    printf ("3 finger swipe right!\n");
 	    //system(commands[20]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && x0last < x0first
+	  else if (finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && x0last < x0first
 	      && x1last < x1first && x2last < x2first)
 	  {
 	    printf ("3 finger swipe left!\n");
@@ -844,9 +847,9 @@ int main(int argc, char **argv)
 	  if (y0first >= (ymax - offsetbottom)
 	      && y1first >= (ymax - offsetbottom)
 	      && y2first >= (ymax - offsetbottom)
-	      && y3first >= (ymax - offsetbottom) && finger0directionality < 1
-	      && finger1directionality < 1 && finger2directionality < 1
-	      && finger3directionality < 1)
+	      && y3first >= (ymax - offsetbottom) && finger1directionality < 1
+	      && finger2directionality < 1 && finger3directionality < 1
+	      && finger4directionality < 1)
 	  {
 	    printf ("4 finger swipe from bottom edge!\n");
 	    //system(commands[24]);
@@ -854,8 +857,8 @@ int main(int argc, char **argv)
 	  }
 	  else if (y0first <= offsettop && y1first <= offsettop
 	      && y2first <= offsettop && y3first <= offsettop
-	      && finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && finger3directionality < 1)
+	      && finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && finger4directionality < 1)
 	  {
 	    printf ("4 finger swipe from top edge!\n");
 	    //system(commands[25]);
@@ -864,9 +867,9 @@ int main(int argc, char **argv)
 	  else if (x0first >= (xmax - offsetright)
 	      && x1first >= (xmax - offsetright)
 	      && x2first >= (xmax - offsetright)
-	      && x3first >= (xmax - offsetright) && finger0directionality > 1
-	      && finger1directionality > 1 && finger2directionality > 1
-	      && finger3directionality > 1)
+	      && x3first >= (xmax - offsetright) && finger1directionality > 1
+	      && finger2directionality > 1 && finger3directionality > 1
+	      && finger4directionality > 1)
 	  {
 	    printf ("4 finger swipe from right edge!\n");
 	    //system(commands[26]);
@@ -874,15 +877,15 @@ int main(int argc, char **argv)
 	  }
 	  else if (x0first <= offsetleft && x1first <= offsetleft
 	      && x2first <= offsetleft && x3first <= offsetleft
-	      && finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && finger3directionality > 1)
+	      && finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && finger4directionality > 1)
 	  {
 	    printf ("4 finger swipe from left edge!\n");
 	    //system(commands[27]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && finger3directionality < 1
+	  else if (finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && finger4directionality < 1
 	      && y0last > y0first && y1last > y1first && y2last > y2first
 	      && y3last > y3first)
 	  {
@@ -890,8 +893,8 @@ int main(int argc, char **argv)
 	    //system(commands[28]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && finger3directionality < 1
+	  else if (finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && finger4directionality < 1
 	      && y0last < y0first && y1last < y1first && y2last < y2first
 	      && y3last < y3first)
 	  {
@@ -899,8 +902,8 @@ int main(int argc, char **argv)
 	    //system(commands[29]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && finger3directionality > 1
+	  else if (finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && finger4directionality > 1
 	      && x0last > x0first && x1last > x1first && x2last > x2first
 	      && x3last > x3first)
 	  {
@@ -908,8 +911,8 @@ int main(int argc, char **argv)
 	    //system(commands[30]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && finger3directionality > 1
+	  else if (finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && finger4directionality > 1
 	      && x0last < x0first && x1last < x1first && x2last < x2first
 	      && x3last < x3first)
 	  {
@@ -999,9 +1002,9 @@ int main(int argc, char **argv)
 	  if (y0first >= (ymax - offsetbottom)
 	      && y1first >= (ymax - offsetbottom)
 	      && y2first >= (ymax - offsetbottom)
-	      && y3first >= (ymax - offsetbottom) && finger0directionality < 1
-	      && finger1directionality < 1 && finger2directionality < 1
-	      && finger3directionality < 1)
+	      && y3first >= (ymax - offsetbottom) && finger1directionality < 1
+	      && finger2directionality < 1 && finger3directionality < 1
+	      && finger4directionality < 1)
 	  {
 	    printf ("5 finger swipe from bottom edge!\n");
 	    //system(commands[34]);
@@ -1009,8 +1012,8 @@ int main(int argc, char **argv)
 	  }
 	  else if (y0first <= offsettop && y1first <= offsettop
 	      && y2first <= offsettop && y3first <= offsettop
-	      && finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && finger3directionality < 1)
+	      && finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && finger4directionality < 1)
 	  {
 	    printf ("5 finger swipe from top edge!\n");
 	    //system(commands[35]);
@@ -1019,9 +1022,9 @@ int main(int argc, char **argv)
 	  else if (x0first >= (xmax - offsetright)
 	      && x1first >= (xmax - offsetright)
 	      && x2first >= (xmax - offsetright)
-	      && x3first >= (xmax - offsetright) && finger0directionality > 1
-	      && finger1directionality > 1 && finger2directionality > 1
-	      && finger3directionality > 1)
+	      && x3first >= (xmax - offsetright) && finger1directionality > 1
+	      && finger2directionality > 1 && finger3directionality > 1
+	      && finger4directionality > 1)
 	  {
 	    printf ("5 finger swipe from right edge!\n");
 	    //system(commands[36]);
@@ -1029,15 +1032,15 @@ int main(int argc, char **argv)
 	  }
 	  else if (x0first <= offsetleft && x1first <= offsetleft
 	      && x2first <= offsetleft && x3first <= offsetleft
-	      && finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && finger3directionality > 1)
+	      && finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && finger4directionality > 1)
 	  {
 	    printf ("5 finger swipe from left edge!\n");
 	    //system(commands[37]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && finger3directionality < 1
+	  else if (finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && finger4directionality < 1
 	      && y0last > y0first && y1last > y1first && y2last > y2first
 	      && y3last > y3first)
 	  {
@@ -1045,8 +1048,8 @@ int main(int argc, char **argv)
 	    //system(commands[38]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality < 1 && finger1directionality < 1
-	      && finger2directionality < 1 && finger3directionality < 1
+	  else if (finger1directionality < 1 && finger2directionality < 1
+	      && finger3directionality < 1 && finger4directionality < 1
 	      && y0last < y0first && y1last < y1first && y2last < y2first
 	      && y3last < y3first)
 	  {
@@ -1054,8 +1057,8 @@ int main(int argc, char **argv)
 	    //system(commands[39]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && finger3directionality > 1
+	  else if (finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && finger4directionality > 1
 	      && x0last > x0first && x1last > x1first && x2last > x2first
 	      && x3last > x3first)
 	  {
@@ -1063,8 +1066,8 @@ int main(int argc, char **argv)
 	    //system(commands[40]);
 	    swipesuccess = 1;
 	  }
-	  else if (finger0directionality > 1 && finger1directionality > 1
-	      && finger2directionality > 1 && finger3directionality > 1
+	  else if (finger1directionality > 1 && finger2directionality > 1
+	      && finger3directionality > 1 && finger4directionality > 1
 	      && x0last < x0first && x1last < x1first && x2last < x2first
 	      && x3last < x3first)
 	  {
@@ -1093,11 +1096,9 @@ int main(int argc, char **argv)
 	}
       }
 
-      //printf("arrays before clear: %i %i %i %i %i\n",finger0x.size(),finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size());
+      //printf("arrays before clear: %i %i %i %i %i\n",finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size(),finger5x.size());
 
       /*empty the vectors*/
-      finger0x.clear ();
-      finger0y.clear ();
       finger1x.clear ();
       finger1y.clear ();
       finger2x.clear ();
@@ -1106,6 +1107,8 @@ int main(int argc, char **argv)
       finger3y.clear ();
       finger4x.clear ();
       finger4y.clear ();
+      finger5x.clear ();
+      finger5y.clear ();
 
       x0first = 0;
       x0last = 0;
@@ -1113,37 +1116,37 @@ int main(int argc, char **argv)
       y0first = 0;
       y0last = 0;
       y0len = 0;
-      finger0directionality = 0;
+      finger1directionality = 0;
       x1first = 0;
       x1last = 0;
       x1len = 0;
       y1first = 0;
       y1last = 0;
       y1len = 0;
-      finger1directionality = 0;
+      finger2directionality = 0;
       x2first = 0;
       x2last = 0;
       x2len = 0;
       y2first = 0;
       y2last = 0;
       y2len = 0;
-      finger2directionality = 0;
+      finger3directionality = 0;
       x3first = 0;
       x3last = 0;
       x3len = 0;
       y3first = 0;
       y3last = 0;
       y3len = 0;
-      finger3directionality = 0;
+      finger4directionality = 0;
       x4first = 0;
       x4last = 0;
       x4len = 0;
       y4first = 0;
       y4last = 0;
       y4len = 0;
-      finger4directionality = 0;
+      finger5directionality = 0;
 
-      //printf("arrays after clear: %i %i %i %i %i\n",finger0x.size(),finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size());
+      //printf("arrays after clear: %i %i %i %i %i\n",finger1x.size(),finger2x.size(),finger3x.size(),finger4x.size(),finger5x.size());
       swipesuccess = 0;
       nfingers = 0;
     }
