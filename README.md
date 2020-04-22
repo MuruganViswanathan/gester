@@ -8,6 +8,12 @@ Everything that is supposed to be configured by the user can be found in the con
 I took this idea from the [suckless](https://suckless.org) tools, which I really like.
 When everything is configured correctly one can just run the commands ```make``` and ```sudo make install``` which will install the compiled binary into /usr/local/bin/ .
 
+### Update (4/21/2020): Added CMakeFile to support cmake builds. Do:
+- `mkdir build`
+- `cd build`
+- `cmake ..` 
+- `make`
+
 # supported gestures
 Currently the following gestures have been implemented:
 * 1-5 finger swipes from top, bottom, left and right edges of the screen
