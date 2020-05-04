@@ -16,21 +16,28 @@ using namespace std;
 #endif
 
 sig_atomic_t sigusrsig = 0;
-void
-my_handler (int signum)
-{
-  if (signum == SIGUSR1)
-  {
-    //printf("Received SIGUSR1!\n");
-    sigusrsig = 1;
-  }
-}
 
-int
-main ()
+//void my_handler (int signum)
+//{
+//  if (signum == SIGUSR1)
+//  {
+//    printf("Received SIGUSR1!\n");
+//    sigusrsig = 1;
+//  }
+//}
+
+int main()
 {
-  printf ("Zonare Gestures1 :\n");
+  printf ("Zonare Gestures :\n");
   int device = open (devname, O_RDONLY);
+
+  if(device == -1)
+  {
+    printf("Error: Could not open input device : %s\n", devname);
+    return 1;
+  }
+  //printf("device = %d\n", device);
+
   struct input_event ev;
   /*holds information which finger is currently being tracked*/
   int finger = 0;
@@ -78,16 +85,27 @@ main ()
 
   while (1)
   {
-    signal (SIGUSR1, my_handler);
-    if (sigusrsig == 1)
+//    signal (SIGUSR1, my_handler);
+//    if (sigusrsig == 1)
+//    {
+//      sigusrsig = 0;
+//      xacceldata.clear ();
+//      xacceldata.seekg (0);
+//      yacceldata.clear ();
+//      yacceldata.seekg (0);
+//    }
+
+    int n = read (device, &ev, sizeof(ev));
+    if (n < 0)
     {
-      sigusrsig = 0;
-      xacceldata.clear ();
-      xacceldata.seekg (0);
-      yacceldata.clear ();
-      yacceldata.seekg (0);
+       printf("Read failed ! \n");
+       return -1;
     }
-    read (device, &ev, sizeof(ev));
+    else if (n == 0)
+    {
+      printf("No data on port\n");
+    }
+
     //if(ev.type == 1 && ev.value == 1){
 
     //printf("type: %d\t code(Key): %d\t value(State): %d\n", ev.type, ev.code, ev.value);
@@ -110,7 +128,7 @@ main ()
 	xval = ev.value;
       if (ev.code == ABS_MT_POSITION_Y)
 	yval = ev.value;
-      printf ("(%d, %d)\n", xval, yval);
+      //printf ("(%d, %d)\n", xval, yval);
     }
 
     /*determine which finger's coordinates will be incoming*/
@@ -759,7 +777,7 @@ main ()
 	if (comdist < comdisttolerance && swipesuccess == 0)
 	{
 	  printf (
-	      "Three finger rotation with an angle of %i degree scaled to %i\n",
+	      "3 finger rotation with an angle of %i degree scaled to %i\n",
 	      angleavg, anglescaled);
 	  if (angleavg < 0)
 	  {
@@ -903,7 +921,7 @@ main ()
 	if (comdist < comdisttolerance && swipesuccess == 0)
 	{
 	  printf (
-	      "Four finger rotation with an angle of %i degree scaled to %i\n",
+	      "4 finger rotation with an angle of %i degree scaled to %i\n",
 	      angleavg, anglescaled);
 	  if (angleavg < 0)
 	  {
@@ -1058,7 +1076,7 @@ main ()
 	if (comdist < comdisttolerance && swipesuccess == 0)
 	{
 	  printf (
-	      "Five finger rotation with an angle of %i degree scaled to %i\n",
+	      "5 finger rotation with an angle of %i degree scaled to %i\n",
 	      angleavg, anglescaled);
 	  if (angleavg < 0)
 	  {
@@ -1130,4 +1148,6 @@ main ()
       nfingers = 0;
     }
   }
+
+  return 0;
 }
