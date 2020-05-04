@@ -5,11 +5,10 @@
 
 WORKDIR = `pwd`
 
-CC = gcc
-CXX = g++
-AR = ar
-LD = g++
-WINDRES = windres
+CC = /remote/xtools/timesys/x86ZonareG3Plus/10_0_dev_latest/toolchain/bin/x86_64-timesys-linux-gnu-gcc
+CXX = /remote/xtools/timesys/x86ZonareG3Plus/10_0_dev_latest/toolchain/bin/x86_64-timesys-linux-gnu-g++
+AR = /remote/xtools/timesys/x86ZonareG3Plus/10_0_dev_latest/toolchain/bin/x86_64-timesys-linux-gnu-ar
+LD = /remote/xtools/timesys/x86ZonareG3Plus/10_0_dev_latest/toolchain/bin/x86_64-timesys-linux-gnu-g++
 
 INC = 
 CFLAGS =  -Wall
@@ -17,6 +16,7 @@ RESINC =
 LIBDIR = 
 LIB = 
 LDFLAGS = 
+SO_FLAGS = -shared -fPIC
 
 INC_DEBUG =  $(INC)
 CFLAGS_DEBUG =  $(CFLAGS) -g
@@ -41,31 +41,42 @@ DEP_RELEASE =
 OUT_RELEASE = bin/Release/zgester
 
 DESTDIR = /usr/local/bin/
+DESTLIBDIR = /usr/local/lib/
 
-OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o
-
-OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o
+OBJ_DEBUG = $(OBJDIR_DEBUG)/main.o $(OBJDIR_DEBUG)/touch-gestures.o 
+OBJ_RELEASE = $(OBJDIR_RELEASE)/main.o $(OBJDIR_RELEASE)/touch-gestures.o
+SO_DEBUG = $(OBJDIR_DEBUG)/libtouch-gestures.so 
+SO_RELEASE = $(OBJDIR_RELEASE)/libtouch-gestures.so 
 
 all: debug release
 
 clean: clean_debug clean_release
 
 install:
-	cp $(OUT_RELEASE) $(DESTDIR) 
+	cp -f $(OUT_RELEASE) $(DESTDIR) 
+	cp -f $(SO_RELEASE) $(DESTLIBDIR) 
 
 before_debug: 
 	test -d bin/Debug || mkdir -p bin/Debug
 	test -d $(OBJDIR_DEBUG) || mkdir -p $(OBJDIR_DEBUG)
 
 after_debug: 
-
+	chmod +x $(SO_DEBUG)
+	
 debug: before_debug out_debug after_debug
 
-out_debug: before_debug $(OBJ_DEBUG) $(DEP_DEBUG)
+out_debug: before_debug $(OBJ_DEBUG) $(SO_DEBUG) $(DEP_DEBUG)
 	$(LD) $(LIBDIR_DEBUG) -o $(OUT_DEBUG) $(OBJ_DEBUG)  $(LDFLAGS_DEBUG) $(LIB_DEBUG)
 
 $(OBJDIR_DEBUG)/main.o: main.cpp
 	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c main.cpp -o $(OBJDIR_DEBUG)/main.o
+	
+$(OBJDIR_DEBUG)/touch-gestures.o: touch-gestures.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(INC_DEBUG) -c touch-gestures.cpp -o $(OBJDIR_DEBUG)/touch-gestures.o
+
+$(OBJDIR_DEBUG)/libtouch-gestures.so: touch-gestures.cpp
+	$(CXX) $(CFLAGS_DEBUG) $(SO_FLAGS) $(INC_DEBUG) -c touch-gestures.cpp -o $(OBJDIR_DEBUG)/libtouch-gestures.so
+
 
 clean_debug: 
 	rm -f $(OBJ_DEBUG) $(OUT_DEBUG)
@@ -77,14 +88,22 @@ before_release:
 	test -d $(OBJDIR_RELEASE) || mkdir -p $(OBJDIR_RELEASE)
 
 after_release: 
-
+	chmod +x $(SO_RELEASE)
+	
 release: before_release out_release after_release
 
-out_release: before_release $(OBJ_RELEASE) $(DEP_RELEASE)
+out_release: before_release $(OBJ_RELEASE) $(SO_RELEASE) $(DEP_RELEASE)
 	$(LD) $(LIBDIR_RELEASE) -o $(OUT_RELEASE) $(OBJ_RELEASE)  $(LDFLAGS_RELEASE) $(LIB_RELEASE)
 
 $(OBJDIR_RELEASE)/main.o: main.cpp
 	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c main.cpp -o $(OBJDIR_RELEASE)/main.o
+
+$(OBJDIR_RELEASE)/touch-gestures.o: touch-gestures.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(INC_RELEASE) -c touch-gestures.cpp -o $(OBJDIR_RELEASE)/touch-gestures.o
+
+$(OBJDIR_RELEASE)/libtouch-gestures.so: touch-gestures.cpp
+	$(CXX) $(CFLAGS_RELEASE) $(SO_FLAGS) $(INC_RELEASE) -c touch-gestures.cpp -o $(OBJDIR_RELEASE)/libtouch-gestures.so
+
 
 clean_release: 
 	rm -f $(OBJ_RELEASE) $(OUT_RELEASE)
